@@ -14,7 +14,7 @@ if (-not (Test-Path .env)) {
 
 $envMap = @{}
 Get-Content .env | Where-Object { $_ -match '^[A-Z_]+=' } | ForEach-Object { $k, $v = $_ -split '=', 2; $envMap[$k] = $v }
-$port = if ($envMap.TS_WEB_PORT) { $envMap.TS_WEB_PORT } else { "8080" }
+$port = if ($envMap.TS_WEB_PORT) { $envMap.TS_WEB_PORT } else { "8088" }
 $bind = if ($envMap.TS_BIND_ADDRESS) { $envMap.TS_BIND_ADDRESS } else { "127.0.0.1" }
 
 $running = docker compose ps --status running --services 2>$null

@@ -75,7 +75,7 @@ services:
       dockerfile: frontend/Dockerfile
     image: terrashield-web:local
     ports:
-      - "${TS_BIND_ADDRESS:-127.0.0.1}:${TS_WEB_PORT:-8080}:8080"
+      - "${TS_BIND_ADDRESS:-127.0.0.1}:${TS_WEB_PORT:-8088}:8080"
     depends_on:
       api:
         condition: service_healthy

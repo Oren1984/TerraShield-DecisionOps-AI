@@ -10,7 +10,7 @@ if [ ! -f .env ]; then
   sed -i.bak "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=${pw}/" .env && rm -f .env.bak
   echo "Created .env with a random database password."
 fi
-port=$(grep -E '^TS_WEB_PORT=' .env | cut -d= -f2); port=${port:-8080}
+port=$(grep -E '^TS_WEB_PORT=' .env | cut -d= -f2); port=${port:-8088}
 bind=$(grep -E '^TS_BIND_ADDRESS=' .env | cut -d= -f2); bind=${bind:-127.0.0.1}
 if ! docker compose ps --status running --services 2>/dev/null | grep -q '^web$'; then
   if (exec 3<>"/dev/tcp/127.0.0.1/${port}") 2>/dev/null; then

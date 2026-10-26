@@ -27,12 +27,12 @@ Startup order: `db` (healthy) → `migrate` (Alembic upgrade, reference data, co
 
 | What | Where |
 | --- | --- |
-| Application | http://127.0.0.1:8080 (change with `TS_WEB_PORT`; bound to loopback by `TS_BIND_ADDRESS`) |
+| Application | http://127.0.0.1:8088 (change with `TS_WEB_PORT`; bound to loopback by `TS_BIND_ADDRESS`) |
 | Liveness / readiness | `/health/live`, `/health/ready` (database, migration head, pgvector, district) |
 | API documentation | `/api/docs` |
 | Health check script | `bash scripts/health.sh` or `./scripts/health.ps1` |
 
-Port 8080 was free on the test machine; if it is taken, the bootstrap script stops and asks you to set `TS_WEB_PORT`.
+The default port is 8088; if it is taken, the bootstrap script stops and asks you to set `TS_WEB_PORT`.
 
 ## First use
 
