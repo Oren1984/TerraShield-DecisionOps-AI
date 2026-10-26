@@ -30,3 +30,4 @@ backups/
 evaluation-output/
 .DS_Store
 Thumbs.db
+*.tsbuildinfo
