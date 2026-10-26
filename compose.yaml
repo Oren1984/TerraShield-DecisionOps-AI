@@ -1,0 +1,102 @@
+# TerraShield DecisionOps AI: local deployment package (not public hosting).
+# Start: copy .env.example to .env, set secrets, then `docker compose up --build -d`.
+name: terrashield
+
+x-backend-env: &backend-env
+  TS_DATABASE_URL: postgresql+psycopg://terrashield:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/terrashield
+  TS_LOG_LEVEL: ${TS_LOG_LEVEL:-INFO}
+  TS_OLLAMA_BASE_URL: ${TS_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+  TS_OLLAMA_MODEL: ${TS_OLLAMA_MODEL:-qwen2.5:3b}
+  TS_OLLAMA_EMBED_MODEL: ${TS_OLLAMA_EMBED_MODEL:-nomic-embed-text}
+  TS_COOKIE_SECURE: ${TS_COOKIE_SECURE:-false}
+  TS_SIM_STEP_DELAY_MS: ${TS_SIM_STEP_DELAY_MS:-350}
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.1-pg17
+    environment:
+      POSTGRES_USER: terrashield
+      POSTGRES_DB: terrashield
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrashield -d terrashield"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [data]
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: terrashield-backend:local
+    command: ["sh", "-c", "alembic upgrade head && python -m app.cli seed"]
+    environment: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [data]
+    restart: "no"
+
+  api:
+    image: terrashield-backend:local
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3).status == 200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [data, edge]
+    restart: unless-stopped
+
+  worker:
+    image: terrashield-backend:local
+    command: ["python", "-m", "app.worker"]
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [data, edge]
+    stop_grace_period: 30s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: terrashield-web:local
+    ports:
+      - "${TS_BIND_ADDRESS:-127.0.0.1}:${TS_WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [edge]
+    restart: unless-stopped
+
+  # Optional local model runtime. Enable with: docker compose --profile local-model up -d
+  # and set TS_OLLAMA_BASE_URL=http://ollama:11434 in .env. A host Ollama works too (default URL).
+  ollama:
+    image: ollama/ollama:0.40.6
+    profiles: ["local-model"]
+    volumes:
+      - ollama-models:/root/.ollama
+    networks: [edge]
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  ollama-models:
+
+networks:
+  data:
+    internal: true
+  edge: {}

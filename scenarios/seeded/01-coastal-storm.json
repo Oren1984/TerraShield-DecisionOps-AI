@@ -13,7 +13,7 @@
     "Two barrier sets and one temporary pump are available.",
     "Budget does not cover protecting every exposed asset."
   ],
-  "expected_behavior": "Without action the warehouse and pump station flood near the surge peak. A constrained plan protects the pump station first because its failure raises water levels across Harbor Flats.",
+  "expected_behavior": "Without action the warehouse, the residences, both pump stations and the Marsh Lane substation flood near the surge peak. Within the budget, the agent-guided constrained plan protects the substation and keeps the water works powered, which roughly halves simulated disruption; Harbor Flats assets still flood. Protecting every exposed asset is not affordable.",
   "params": {
     "duration_h": 18,
     "rainfall": {
