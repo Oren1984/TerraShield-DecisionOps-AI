@@ -42,6 +42,7 @@ def configure_logging(level: str) -> None:
     root.handlers[:] = [handler]
     root.setLevel(level)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def log(logger: logging.Logger, level: int, msg: str, **fields: object) -> None:

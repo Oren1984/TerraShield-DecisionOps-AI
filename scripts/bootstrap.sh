@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Prepare .env (random DB password), check the port, build and start the stack, wait for health.
 set -euo pipefail
+export MSYS_NO_PATHCONV=1  # Git Bash on Windows: keep container paths such as /tmp unchanged
 cd "$(dirname "$0")/.."
 
 if [ ! -f .env ]; then

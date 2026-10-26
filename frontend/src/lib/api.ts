@@ -255,6 +255,7 @@ export interface RunDetail extends RunSummary {
     items: EvidenceItem[];
     restrictions?: Record<string, number>;
     conflicts?: Conflict[];
+    conflict_rounds?: { round: number; conflicts: Conflict[] }[];
     candidate_actions?: string[];
     explanation?: {
       recommended_plan: string;

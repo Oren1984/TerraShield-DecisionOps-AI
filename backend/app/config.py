@@ -29,12 +29,12 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:3b"
     ollama_embed_model: str = "nomic-embed-text"
-    agent_timeout_s: float = 180.0
+    agent_timeout_s: float = 300.0
     agent_max_tokens: int = 900
     agent_context_tokens: int = 6144
     agent_max_retries: int = 1
     max_revision_rounds: int = 1
-    run_max_seconds: float = 1800.0
+    run_max_seconds: float = 3600.0
 
     # Worker
     worker_poll_s: float = 1.0

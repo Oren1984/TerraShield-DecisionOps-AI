@@ -2,6 +2,7 @@
 # Restore a backup into the running db service, then verify pgvector and embeddings.
 # Usage: scripts/restore.sh backups/terrashield-YYYYmmddTHHMMSSZ.dump
 set -euo pipefail
+export MSYS_NO_PATHCONV=1  # Git Bash on Windows: keep container paths such as /tmp unchanged
 cd "$(dirname "$0")/.."
 file=${1:?usage: restore.sh <backup.dump>}
 [ -f "$file" ] || { echo "No such file: $file" >&2; exit 1; }

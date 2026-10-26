@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.1-pg17
+        env:
+          POSTGRES_USER: terrashield
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: terrashield_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U terrashield" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      TS_TEST_DATABASE_URL: postgresql+psycopg://terrashield:ci-only-password@localhost:5432/terrashield_test
+      TS_MIGRATION_TEST_DATABASE_URL: postgresql+psycopg://terrashield:ci-only-password@localhost:5432/terrashield_migtest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: "0.11.7"
+      - run: uv sync --frozen --python 3.12
+      - name: Create migration test database
+        run: PGPASSWORD=ci-only-password psql -h localhost -U terrashield -d terrashield_test -c "CREATE DATABASE terrashield_migtest"
+      - name: Format and lint
+        run: uv run ruff format --check . && uv run ruff check .
+      - name: Types
+        run: uv run mypy app
+      - name: Tests (simulation, planning, agents, API + PostgreSQL, migrations)
+        run: uv run pytest -q
+      - name: Fixture vectors are reproducible
+        run: |
+          uv run python -m app.cli build-fixture-vectors
+          git diff --exit-code ../scenarios/corpus/fixture_vectors.json
+      - name: Dependency audit
+        run: uv export --frozen --no-dev --no-hashes -o /tmp/requirements.txt && uv run pip-audit -r /tmp/requirements.txt
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Secret scan (gitleaks)
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.28.0 detect --source /repo --redact --no-banner
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build images
+        run: |
+          cp .env.example .env
+          sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 20)/" .env
+          docker compose build
+      - name: Image vulnerability scan (report only; findings are documented, not hidden)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: terrashield-backend:local
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+      - name: Web image scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: image
+          image-ref: terrashield-web:local
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+      - name: Clean start, health and readiness
+        run: bash scripts/bootstrap.sh && bash scripts/health.sh
+      - name: Mock journey through real API, worker and PostgreSQL (Playwright)
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - name: Backup and restore round trip
+        run: |
+          before=$(docker compose exec -T db psql -U terrashield -d terrashield -Atc "select count(*) from runs")
+          bash scripts/backup.sh
+          bash scripts/restore.sh "$(ls -t backups/*.dump | head -1)"
+          bash scripts/health.sh
+          after=$(docker compose exec -T db psql -U terrashield -d terrashield -Atc "select count(*) from runs")
+          test "$before" = "$after"
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color | tail -300
+      - uses: actions/upload-artifact@v7.0.2
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+      - name: Shut down
+        if: always()
+        run: docker compose down -v

@@ -524,3 +524,20 @@ def test_health_and_ops(owner, app_ready):
     assert ready.status_code == 200 and ready.json()["checks"]["migrations"] == "ok"
     ops = owner.get("/api/ops/status").json()
     assert "jobs" in ops and "analysis_latency" in ops and ops["job_retries"] >= 1
+
+
+def test_reseeding_keeps_other_model_embeddings(db):
+    from app.models import Chunk, ChunkEmbedding, EmbeddingModel
+    from app.seed import seed_corpus
+
+    if db.get(EmbeddingModel, "test:tiny") is None:
+        db.add(
+            EmbeddingModel(id="test:tiny", provider="ollama", name="tiny", dimension=3, version="1", is_semantic=True)
+        )
+        db.flush()
+    chunk = db.scalar(select(Chunk).limit(1))
+    db.merge(ChunkEmbedding(chunk_id=chunk.id, model_id="test:tiny", embedding=[0.1, 0.2, 0.3]))
+    db.commit()
+    seed_corpus(db)
+    db.commit()
+    assert db.get(ChunkEmbedding, (chunk.id, "test:tiny")) is not None

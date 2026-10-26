@@ -240,7 +240,12 @@ def ingest_document(
     doc.status, doc.superseded_by, doc.provenance = status, superseded_by, provenance
     doc.license, doc.source_updated_at = license_, updated
     db.flush()
-    for old in db.scalars(select(Chunk).where(Chunk.document_id == doc_id)):
+    existing = list(db.scalars(select(Chunk).where(Chunk.document_id == doc_id).order_by(Chunk.ordinal)))
+    wanted = [(f"{doc_id}#{i + 1}@{version}", h, t) for i, (h, t) in enumerate(sections)]
+    if [(c.id, c.heading, c.text) for c in existing] == wanted:
+        # Unchanged content: keep chunks and every model's embeddings (re-seeding must not wipe them).
+        return existing
+    for old in existing:
         db.delete(old)
     db.flush()
     chunks = []

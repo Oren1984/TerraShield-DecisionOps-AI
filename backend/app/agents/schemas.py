@@ -52,6 +52,22 @@ class SpecialistAssessment(_Strict):
     insufficient_evidence: bool = False
 
 
+class NonGroundAssessment(_Strict):
+    """Output schema offered to water and air: identical but without restrictions,
+    which only the ground role may issue. Validation still uses SpecialistAssessment."""
+
+    role: Role
+    summary: str = Field(..., min_length=1, max_length=800)
+    findings: list[Finding] = Field(default_factory=list, max_length=8)
+    proposed_actions: list[ProposedAction] = Field(default_factory=list, max_length=8)
+    citations: list[str] = Field(default_factory=list, max_length=6)
+    insufficient_evidence: bool = False
+
+
+def specialist_schema(role: str) -> type[BaseModel]:
+    return SpecialistAssessment if role == "ground" else NonGroundAssessment
+
+
 class ConflictResolution(_Strict):
     conflict_id: str = Field(..., max_length=16)
     resolution: Literal[

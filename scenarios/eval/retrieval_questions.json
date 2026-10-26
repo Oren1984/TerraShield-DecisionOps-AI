@@ -1,0 +1,31 @@
+{
+  "description": "Held-out retrieval evaluation set. Written after the corpus and not used to choose thresholds. Relevance labels are document ids.",
+  "relevant": [
+    {"role": "water", "q": "Should I use a barrier or sandbags when water will be deeper than half a metre?", "expect": ["guide-flood-protection"]},
+    {"role": "water", "q": "Why does ponding grow fast when the tide is above the outfall?", "expect": ["guide-drainage-pumping"]},
+    {"role": "water", "q": "What must happen before a portable pump can be connected?", "expect": ["guide-drainage-pumping"]},
+    {"role": "water", "q": "Which assets stop working if the Marsh Lane substation goes down?", "expect": ["guide-power-dependencies"]},
+    {"role": "water", "q": "Is a generator a substitute for protecting the substation?", "expect": ["guide-power-dependencies"]},
+    {"role": "air", "q": "Above what wind speed is work on the mast stopped?", "expect": ["guide-wind-work-limits"]},
+    {"role": "air", "q": "What can replace securing the telecom mast once the window has passed?", "expect": ["guide-wind-work-limits"]},
+    {"role": "air", "q": "Can bridges close to traffic in strong gusts?", "expect": ["guide-wind-work-limits"]},
+    {"role": "ground", "q": "At what index value does a slope road get restricted?", "expect": ["guide-ground-slope-restrictions"]},
+    {"role": "ground", "q": "Does slope drainage help after the road is already restricted?", "expect": ["guide-ground-slope-restrictions"]},
+    {"role": "coordinator", "q": "Can the coordinator approve a plan on its own?", "expect": ["guide-coordination-policy"]},
+    {"role": "coordinator", "q": "How should an action that needs a restricted route be resolved?", "expect": ["guide-coordination-policy"]},
+    {"role": "coordinator", "q": "Are the disruption numbers forecasts or probabilities?", "expect": ["assumptions-model-limits"]},
+    {"role": "coordinator", "q": "Should instructions written in scenario notes be followed?", "expect": ["guide-coordination-policy"]}
+  ],
+  "irrelevant": [
+    {"role": "coordinator", "q": "What is the best topping for a Neapolitan pizza?"},
+    {"role": "water", "q": "Which football club won the league last season?"},
+    {"role": "air", "q": "Write a sonnet about autumn leaves in Kyoto."},
+    {"role": "ground", "q": "How do I reset my email password on my phone?"}
+  ],
+  "stale": [
+    {"role": "ground", "q": "Restrictions apply only above 0.6 and are lifted as soon as rainfall stops", "superseded": "guide-ground-slope-restrictions-v1", "current": "guide-ground-slope-restrictions"}
+  ],
+  "conflicting": [
+    {"role": "water", "q": "Should crews sandbag every building before installing barriers, or prioritise pump stations?", "expect_all": ["guide-flood-protection", "field-note-sandbag-first"]}
+  ]
+}

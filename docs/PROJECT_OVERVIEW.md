@@ -42,6 +42,12 @@ Agents are software roles, not user accounts. The coordinator cannot approve pla
 6. **Simulation**: the approved plan runs hour by hour in the simulator against the same scenario and seed as the baseline.
 7. **Completion**: before/after maps, outcomes, remaining risks, the decision record and a downloadable report.
 
+![Specialist team with findings, proposals, restrictions and the coordinator's decisions](images/team-conflicts.png)
+
+![Plan comparison: verification status, disruption, sensitivity, cost and constraint checks](images/plan-comparison.png)
+
+![Completion: before/after maps, outcomes, remaining risks and decision record](images/completion-report.png)
+
 Runs can also end **blocked** (no plan satisfies the hard constraints and requirements), **failed** (for example a model timeout or invalid model output), **rejected** or **cancelled**. Each state is shown as such; nothing is relabelled.
 
 ## Practical scenario

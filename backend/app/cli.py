@@ -81,6 +81,30 @@ def cmd_scenario_schema(args: argparse.Namespace) -> None:
         print(out)
 
 
+def _write(result: dict, output: str | None) -> None:
+    text = json.dumps(result, indent=2)
+    if output:
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
+        Path(output).write_text(text + "\n", encoding="utf-8")
+    summary = {k: v for k, v in result.items() if k not in ("rows", "details")}
+    print(json.dumps(summary, indent=2))
+
+
+def cmd_evaluate_planning(args: argparse.Namespace) -> None:
+    from app.evaluation import evaluate_planning
+
+    _write(evaluate_planning(args.per_scenario, args.seed), args.output)
+
+
+def cmd_evaluate_retrieval(args: argparse.Namespace) -> None:
+    from app.agents.retrieval import FIXTURE_MODEL_ID, ollama_model_id
+    from app.evaluation import evaluate_retrieval
+
+    model_id = ollama_model_id() if args.model == "local" else FIXTURE_MODEL_ID
+    with session_scope() as db:
+        _write(evaluate_retrieval(db, model_id), args.output)
+
+
 def main() -> None:
     configure_logging(settings.log_level)
     ap = argparse.ArgumentParser(prog="terrashield")
@@ -102,6 +126,15 @@ def main() -> None:
     p = sub.add_parser("scenario-schema", help="print the scenario parameter JSON schema")
     p.add_argument("--output")
     p.set_defaults(fn=cmd_scenario_schema)
+    p = sub.add_parser("evaluate-planning", help="compare planners on unseen scenario variants")
+    p.add_argument("--per-scenario", type=int, default=5)
+    p.add_argument("--seed", type=int, default=97_531)
+    p.add_argument("--output")
+    p.set_defaults(fn=cmd_evaluate_planning)
+    p = sub.add_parser("evaluate-retrieval", help="held-out retrieval evaluation (mock fixture or local embeddings)")
+    p.add_argument("--model", choices=["mock", "local"], default="mock")
+    p.add_argument("--output")
+    p.set_defaults(fn=cmd_evaluate_retrieval)
     args = ap.parse_args()
     args.fn(args)
 

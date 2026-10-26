@@ -27,6 +27,7 @@ from app.agents.schemas import (
     CoordinatorConsolidation,
     PlanExplanation,
     SpecialistAssessment,
+    specialist_schema,
 )
 from app.agents.validate import (
     ValidationContext,
@@ -333,7 +334,7 @@ class Workflow:
                 "assess",
                 1,
                 payloads[role],
-                SpecialistAssessment,
+                specialist_schema(role),
                 partial(_validate_specialist, role=role, ctx=ctx),
                 ctx.retrieved[role],
             )
@@ -345,6 +346,7 @@ class Workflow:
             ctx, assessments, evidence, coord_guidance, round_=1, allow_revisions=settings.max_revision_rounds > 0
         )
         rounds = 1
+        conflict_rounds = [{"round": 1, "conflicts": consolidation[1]}]
         while consolidation[0].revision_requests and rounds <= settings.max_revision_rounds:
             rounds += 1
             conflict_by_id = {c["id"]: c for c in consolidation[1]}
@@ -375,7 +377,7 @@ class Workflow:
                     "revise",
                     rounds,
                     payload,
-                    SpecialistAssessment,
+                    specialist_schema(role),
                     partial(_validate_specialist, role=role, ctx=ctx),
                     ctx.retrieved[role],
                 )
@@ -388,6 +390,7 @@ class Workflow:
                 round_=rounds,
                 allow_revisions=rounds <= settings.max_revision_rounds,
             )
+            conflict_rounds.append({"round": rounds, "conflicts": consolidation[1]})
         final, conflicts = consolidation
         if final.revision_requests:
             self.t(
@@ -401,6 +404,7 @@ class Workflow:
             run.evidence,
             restrictions=restrictions,
             conflicts=conflicts,
+            conflict_rounds=conflict_rounds,
             candidate_actions=[f"{s.action_type}:{s.target}" for s in final.selected_actions],
         )
         if not transition(self.db, run.id, {"assessing"}, "planning", "worker", "Planning started."):

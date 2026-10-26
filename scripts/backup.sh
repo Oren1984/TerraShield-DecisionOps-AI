@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Consistent logical backup (pg_dump custom format) including the vector extension and embeddings.
 set -euo pipefail
+export MSYS_NO_PATHCONV=1  # Git Bash on Windows: keep container paths such as /tmp unchanged
 cd "$(dirname "$0")/.."
 mkdir -p backups
 out="backups/terrashield-$(date -u +%Y%m%dT%H%M%SZ).dump"

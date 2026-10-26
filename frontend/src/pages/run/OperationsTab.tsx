@@ -156,15 +156,23 @@ export function OperationsTab({ run, events }: { run: RunDetail; events: TraceEv
   const tl = useTimeline(hours.length);
   const [layers, setLayers] = useState<Layers>(DEFAULT_LAYERS);
   const h = hours[tl.hour];
-  const conflicts: Conflict[] = run.evidence?.conflicts ?? [];
-  const coord = [...run.assessments]
-    .reverse()
-    .find((a) => a.role === "coordinator" && a.step === "consolidate" && a.status === "valid");
-  const resolutions = new Map(
-    (
-      (coord?.output?.resolutions as { conflict_id: string; resolution: string; explanation: string }[]) ?? []
-    ).map((r) => [r.conflict_id, r]),
-  );
+  const rounds: { round: number; conflicts: Conflict[] }[] =
+    run.evidence?.conflict_rounds ??
+    (run.evidence?.conflicts ? [{ round: 1, conflicts: run.evidence.conflicts }] : []);
+  const total = rounds.reduce((n, r) => n + r.conflicts.length, 0);
+  const resolutionsFor = (round: number) =>
+    new Map(
+      (
+        (run.assessments.find(
+          (a) =>
+            a.role === "coordinator" &&
+            a.step === "consolidate" &&
+            a.status === "valid" &&
+            a.round === round &&
+            a.revision === 0,
+        )?.output?.resolutions as { conflict_id: string; resolution: string }[]) ?? []
+      ).map((r) => [r.conflict_id, r]),
+    );
   const restrictions = run.evidence?.restrictions ?? {};
   const roles = ["water", "air", "ground", "coordinator"];
 
@@ -277,31 +285,46 @@ export function OperationsTab({ run, events }: { run: RunDetail; events: TraceEv
       </section>
 
       <div className="grid cols-2">
-        <Panel title={`Detected conflicts (${conflicts.length})`}>
-          {conflicts.length === 0 ? (
-            <p className="faint">
-              {run.evidence ? "No conflicts detected between specialist proposals." : "Not evaluated yet."}
-            </p>
+        <Panel title={`Detected conflicts (${total})`}>
+          {rounds.length === 0 ? (
+            <p className="faint">Not evaluated yet.</p>
           ) : (
-            <ul className="stack" style={{ paddingLeft: 18 }} data-testid="conflicts">
-              {conflicts.map((c) => {
-                const r = resolutions.get(c.id);
+            <div className="stack" data-testid="conflicts">
+              {rounds.map(({ round, conflicts }) => {
+                const res = resolutionsFor(round);
                 return (
-                  <li key={c.id}>
-                    <b>
-                      {c.id} · {c.type.replaceAll("_", " ")}
-                    </b>{" "}
-                    <span className="faint">({c.roles.join(" vs ")})</span>
-                    <div>{c.detail}</div>
-                    {r && (
-                      <div className="muted">
-                        Coordinator: <b>{r.resolution.replaceAll("_", " ")}</b>
-                      </div>
+                  <div key={round}>
+                    <h3>
+                      Round {round}
+                      {round > 1 ? " (after revision)" : ""}
+                    </h3>
+                    {conflicts.length === 0 ? (
+                      <p className="faint">No conflicts between specialist proposals.</p>
+                    ) : (
+                      <ul style={{ paddingLeft: 18, margin: 0 }}>
+                        {conflicts.map((c) => {
+                          const r = res.get(c.id);
+                          return (
+                            <li key={c.id}>
+                              <b>
+                                {c.id} · {c.type.replaceAll("_", " ")}
+                              </b>{" "}
+                              <span className="faint">({c.roles.join(" vs ")})</span>
+                              <div>{c.detail}</div>
+                              {r && (
+                                <div className="muted">
+                                  Coordinator: <b>{r.resolution.replaceAll("_", " ")}</b>
+                                </div>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
                     )}
-                  </li>
+                  </div>
                 );
               })}
-            </ul>
+            </div>
           )}
           {Object.keys(restrictions).length > 0 && (
             <p className="faint">
