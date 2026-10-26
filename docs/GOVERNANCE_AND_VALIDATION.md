@@ -36,17 +36,17 @@ Recorded on 26 October 2026 on the test machine: Windows 11, 8 logical CPUs, 16 
 
 | Suite | Result |
 | --- | --- |
-| Backend: simulator, planner/solver/verifier, agent contracts, API + PostgreSQL, migrations (`pytest`) | 72 passed (3 real-Ollama tests skipped unless enabled) |
+| Backend: simulator, planner/solver/verifier, agent contracts, API + PostgreSQL, migrations (`pytest`) | 72 passed; the real-Ollama module is skipped unless enabled |
 | Backend real-Ollama tests (`TS_RUN_OLLAMA_TESTS=1`) | 3 passed: readiness, real embedding pipeline with pgvector retrieval, schema-valid specialist call |
 | Frontend component tests (`vitest`) | 8 passed |
 | Playwright journeys against the Docker stack | 9 desktop journeys + responsive journey at desktop, tablet (820 px) and mobile (Pixel 7) widths passed |
 | Lint/format/types | ruff, ruff format, mypy, eslint, prettier, tsc clean |
 
-Covered behaviours include: mass balance and determinism, monotonic checks (more protection, pumping or less rain never worsens the isolated case), CP-SAT equal to exhaustive enumeration on four tiny instances, infeasible and empty-clause handling, double-booked crews, blocked routes in the plan's own simulation, wind windows, invalid JSON, unknown evidence IDs, fabricated assets, prohibited actions, extra authority fields, a provider that obeys injected scenario notes (rejected), bounded revision rounds, model timeouts, owner/operator/demo permissions, cross-workspace isolation, approval invalidation, immutable inputs, idempotent run creation, cancellation races, worker crash recovery with lease fencing, exhausted retries, migration round trip with no drift, and re-seeding that keeps other models' embeddings.
+Covered behaviours include: mass balance and determinism, monotonic checks (more protection, pumping or less rain never worsens the isolated case), CP-SAT equal to exhaustive enumeration on four tiny instances, infeasible and empty-clause handling, double-booked crews, blocked routes in the plan's own simulation, wind windows, invalid JSON, unknown evidence IDs, fabricated assets, prohibited actions, extra authority fields, a provider that obeys injected scenario notes (rejected), bounded revision rounds, model timeouts, owner/operator/demo permissions, cross-workspace isolation, approval invalidation, immutable inputs, idempotent run creation, cancellation races, worker crash recovery with lease fencing, exhausted retries, migration round trip with no drift, re-seeding that keeps other models' embeddings, and re-seeding after a prior report was added to a workspace library (a crash found during validation and fixed).
 
 ### Docker and operations
 
-- Clean start (`docker compose down -v` then `bootstrap.sh`): ready in about 90 s with image builds.
+- Clean-clone rehearsal: fresh `git clone`, no `.env`, empty volumes, `bootstrap.sh` → ready in 36 s with a warm Docker layer cache (about 90 s when images are built from scratch). All 11 Playwright journeys then passed against it, followed by a backup/restore round trip.
 - Containers run as non-root; the database has no published port; the web port binds to 127.0.0.1.
 - Backup → restore round trip (Bash and PowerShell): pgvector 0.8.1, 40 embeddings across two models and all 16 runs restored; health ready afterwards.
 

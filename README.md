@@ -46,7 +46,7 @@ flowchart LR
 bash scripts/bootstrap.sh        # or ./scripts/bootstrap.ps1 on Windows
 ```
 
-This creates `.env` with a random database password if it does not exist, builds and starts the stack, and waits until it is ready. Then open http://127.0.0.1:8080, create the owner account on first visit, or choose **Explore the demo**. Manual alternative: copy `.env.example` to `.env`, set `POSTGRES_PASSWORD`, run `docker compose up --build -d`.
+This creates `.env` with a random database password if it does not exist, builds and starts the stack, and waits until it is ready. Then open <http://127.0.0.1:8080>, create the owner account on first visit, or choose **Explore the demo**. Manual alternative: copy `.env.example` to `.env`, set `POSTGRES_PASSWORD`, run `docker compose up --build -d`.
 
 ## What is implemented
 

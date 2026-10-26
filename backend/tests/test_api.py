@@ -511,6 +511,11 @@ def test_prior_report_retrieval_is_workspace_scoped(owner, workspace, other_ws, 
         k=10,
     )
     assert not any(c.document_id == "guide-ground-slope-restrictions-v1" for c in stale.chunks)
+    # Re-seeding (every migrate run) must cope with library documents absent from the fixture file.
+    from app.seed import seed_corpus
+
+    seed_corpus(db)
+    db.commit()
     wrong_role = retrieve(
         db, uuid.UUID(workspace["id"]), "air", "slope susceptibility restriction levels", FIXTURE_MODEL_ID, k=10
     )

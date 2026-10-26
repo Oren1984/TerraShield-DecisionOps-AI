@@ -294,7 +294,11 @@ def embed_chunks(db: Session, model_id: str, vectors: dict[str, list[float]] | N
             for i in range(0, len(texts), 16):
                 vecs += ollama_embed(texts[i : i + 16], model.name)
     else:
-        vecs = [vectors[c.id] for c in chunks]
+        missing = [c.id for c in chunks if c.id not in vectors]
+        if missing and model.provider != "fixture":
+            raise ValueError(f"no precomputed vectors for {missing[:3]}")
+        # Chunks added after the fixture file was built (for example prior reports) are hashed on the fly.
+        vecs = [vectors[c.id] if c.id in vectors else fixture_embed(t) for c, t in zip(chunks, texts, strict=True)]
     for c, v in zip(chunks, vecs, strict=True):
         if len(v) != model.dimension:
             raise ValueError(f"dimension mismatch for {c.id}: {len(v)} != {model.dimension}")
