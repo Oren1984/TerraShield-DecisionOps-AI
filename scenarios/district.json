@@ -1,0 +1,88 @@
+{
+  "district_id": "harbor-vale",
+  "version": "1.0.0",
+  "name": "Harbor Vale (fictional)",
+  "provenance": "Fictional district authored for the TerraShield POC. Not based on any real place; all values are demonstrative.",
+  "canvas": {"width": 1000, "height": 640},
+  "sea_polygon": [[0, 600], [1000, 600], [1000, 640], [0, 640]],
+  "river_path": [[700, 40], [690, 160], [710, 280], [690, 400], [700, 520], [705, 600]],
+  "depot_junction": "J10",
+  "zone_access": {"Z1": "J2", "Z2": "J4", "Z3": "J7", "Z4": "J9"},
+  "zones": [
+    {
+      "id": "Z1", "name": "Harbor Flats", "coastal": true,
+      "polygon": [[40, 430], [430, 430], [450, 600], [40, 600]],
+      "area_km2": 1.2, "base_elev_m": 1.2, "imperviousness": 0.75, "ponding_fraction": 0.3,
+      "gravity_drain_m3h": 7000, "outfall_elev_m": 1.8, "crest_elev_m": 2.7, "seawall_length_m": 800,
+      "downstream": [],
+      "soil": {"porosity": 0.35, "active_depth_mm": 800, "initial_saturation": 0.55, "drainage_rate_h": 0.01}
+    },
+    {
+      "id": "Z2", "name": "Riverside", "coastal": true,
+      "polygon": [[430, 430], [760, 400], [780, 600], [450, 600]],
+      "area_km2": 1.0, "base_elev_m": 1.5, "imperviousness": 0.65, "ponding_fraction": 0.3,
+      "gravity_drain_m3h": 6000, "outfall_elev_m": 2.0, "crest_elev_m": 2.9, "seawall_length_m": 600,
+      "downstream": [],
+      "soil": {"porosity": 0.38, "active_depth_mm": 900, "initial_saturation": 0.55, "drainage_rate_h": 0.01}
+    },
+    {
+      "id": "Z3", "name": "Hillcrest Slopes", "coastal": false,
+      "polygon": [[40, 300], [300, 190], [640, 170], [760, 400], [430, 430], [40, 430]],
+      "area_km2": 1.6, "base_elev_m": 6.0, "imperviousness": 0.35, "ponding_fraction": 0.0,
+      "gravity_drain_m3h": 9000, "outfall_elev_m": null, "crest_elev_m": null, "seawall_length_m": 0,
+      "downstream": [["Z1", 0.6], ["Z2", 0.4]],
+      "soil": {"porosity": 0.42, "active_depth_mm": 1000, "initial_saturation": 0.6, "drainage_rate_h": 0.006}
+    },
+    {
+      "id": "Z4", "name": "North Ridge", "coastal": false,
+      "polygon": [[40, 30], [960, 30], [960, 400], [760, 400], [640, 170], [300, 190], [40, 300]],
+      "area_km2": 2.2, "base_elev_m": 18.0, "imperviousness": 0.25, "ponding_fraction": 0.0,
+      "gravity_drain_m3h": 12000, "outfall_elev_m": null, "crest_elev_m": null, "seawall_length_m": 0,
+      "downstream": [["Z3", 1.0]],
+      "soil": {"porosity": 0.4, "active_depth_mm": 1200, "initial_saturation": 0.5, "drainage_rate_h": 0.008}
+    }
+  ],
+  "junctions": [
+    {"id": "J1", "name": "Harbor West", "x": 120, "y": 510, "zone": "Z1"},
+    {"id": "J2", "name": "Quay Junction", "x": 270, "y": 500, "zone": "Z1"},
+    {"id": "J3", "name": "Quay South", "x": 390, "y": 560, "zone": "Z1"},
+    {"id": "J4", "name": "Marsh Lane", "x": 520, "y": 470, "zone": "Z2"},
+    {"id": "J5", "name": "Riverside", "x": 640, "y": 540, "zone": "Z2"},
+    {"id": "J6", "name": "Estuary", "x": 750, "y": 470, "zone": "Z2"},
+    {"id": "J7", "name": "Hillcrest", "x": 330, "y": 340, "zone": "Z3"},
+    {"id": "J8", "name": "Slope Road", "x": 560, "y": 300, "zone": "Z3"},
+    {"id": "J9", "name": "North Ridge", "x": 480, "y": 120, "zone": "Z4"},
+    {"id": "J10", "name": "Works Depot", "x": 250, "y": 100, "zone": "Z4"},
+    {"id": "J11", "name": "Ridge East", "x": 840, "y": 180, "zone": "Z4"},
+    {"id": "J12", "name": "West Hill", "x": 140, "y": 330, "zone": "Z3"}
+  ],
+  "road_edges": [
+    {"id": "E1", "name": "Ridge Road", "from": "J10", "to": "J9", "zone": "Z4", "length_km": 2.0, "low_point_elev_m": 18.0, "slope_susceptibility": 0.2, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E2", "name": "West Descent", "from": "J10", "to": "J12", "zone": "Z3", "length_km": 2.5, "low_point_elev_m": 9.0, "slope_susceptibility": 0.9, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E3", "name": "Harbor Approach", "from": "J12", "to": "J1", "zone": "Z1", "length_km": 1.8, "low_point_elev_m": 1.75, "slope_susceptibility": 0.3, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E4", "name": "Harbor Road", "from": "J1", "to": "J2", "zone": "Z1", "length_km": 1.2, "low_point_elev_m": 1.6, "slope_susceptibility": 0.0, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E5", "name": "Quay Road", "from": "J2", "to": "J3", "zone": "Z1", "length_km": 1.0, "low_point_elev_m": 1.65, "slope_susceptibility": 0.0, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E6", "name": "Marsh Causeway", "from": "J3", "to": "J4", "zone": "Z2", "length_km": 1.6, "low_point_elev_m": 1.85, "slope_susceptibility": 0.0, "wind_exposure": 1.15, "wind_closure_gust_ms": 30},
+    {"id": "E7", "name": "Riverside Road", "from": "J4", "to": "J5", "zone": "Z2", "length_km": 1.4, "low_point_elev_m": 1.9, "slope_susceptibility": 0.0, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E8", "name": "Estuary Bridge", "from": "J5", "to": "J6", "zone": "Z2", "length_km": 0.8, "low_point_elev_m": 3.5, "slope_susceptibility": 0.0, "wind_exposure": 1.25, "wind_closure_gust_ms": 26},
+    {"id": "E9", "name": "Slope Road Upper", "from": "J9", "to": "J8", "zone": "Z3", "length_km": 2.2, "low_point_elev_m": 10.0, "slope_susceptibility": 0.75, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E10", "name": "Slope Road Lower", "from": "J8", "to": "J4", "zone": "Z3", "length_km": 1.9, "low_point_elev_m": 4.0, "slope_susceptibility": 0.85, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E11", "name": "Hill Cross", "from": "J8", "to": "J7", "zone": "Z3", "length_km": 1.8, "low_point_elev_m": 8.0, "slope_susceptibility": 0.4, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E12", "name": "Hill West", "from": "J7", "to": "J12", "zone": "Z3", "length_km": 1.5, "low_point_elev_m": 8.0, "slope_susceptibility": 0.3, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E13", "name": "Clinic Descent", "from": "J7", "to": "J2", "zone": "Z3", "length_km": 1.7, "low_point_elev_m": 3.0, "slope_susceptibility": 0.8, "wind_exposure": 1.0, "wind_closure_gust_ms": null},
+    {"id": "E14", "name": "Ridge East Road", "from": "J9", "to": "J11", "zone": "Z4", "length_km": 3.0, "low_point_elev_m": 20.0, "slope_susceptibility": 0.1, "wind_exposure": 1.3, "wind_closure_gust_ms": 30},
+    {"id": "E15", "name": "East Descent", "from": "J11", "to": "J6", "zone": "Z3", "length_km": 3.2, "low_point_elev_m": 5.0, "slope_susceptibility": 0.65, "wind_exposure": 1.1, "wind_closure_gust_ms": null}
+  ],
+  "assets": [
+    {"id": "A1", "name": "Harborside Logistics Warehouse", "type": "warehouse", "junction": "J2", "x": 230, "y": 545, "zone": "Z1", "elev_m": 1.45, "criticality": 2, "flood_fail_depth_m": 0.35, "wind_fail_gust_ms": 40, "wind_exposure": 1.1, "ground_susceptibility": 0.0, "powered_by": null},
+    {"id": "A2", "name": "Quay Pump Station", "type": "pump_station", "junction": "J3", "x": 410, "y": 585, "zone": "Z1", "elev_m": 1.7, "criticality": 4, "flood_fail_depth_m": 0.4, "wind_fail_gust_ms": 50, "wind_exposure": 1.1, "ground_susceptibility": 0.0, "powered_by": "A3", "pump_capacity_m3h": 12000, "drains_zone": "Z1"},
+    {"id": "A3", "name": "Marsh Lane Substation", "type": "substation", "junction": "J4", "x": 545, "y": 505, "zone": "Z2", "elev_m": 1.75, "criticality": 5, "flood_fail_depth_m": 0.25, "wind_fail_gust_ms": 45, "wind_exposure": 1.0, "ground_susceptibility": 0.0, "powered_by": null},
+    {"id": "A4", "name": "Riverside Pump Station", "type": "pump_station", "junction": "J5", "x": 615, "y": 575, "zone": "Z2", "elev_m": 1.8, "criticality": 4, "flood_fail_depth_m": 0.4, "wind_fail_gust_ms": 50, "wind_exposure": 1.0, "ground_susceptibility": 0.0, "powered_by": "A3", "pump_capacity_m3h": 9000, "drains_zone": "Z2"},
+    {"id": "A5", "name": "Hillcrest Community Clinic", "type": "clinic", "junction": "J7", "x": 300, "y": 365, "zone": "Z3", "elev_m": 9.0, "criticality": 5, "flood_fail_depth_m": 0.3, "wind_fail_gust_ms": 42, "wind_exposure": 1.0, "ground_susceptibility": 0.35, "powered_by": null},
+    {"id": "A6", "name": "North Ridge School (shelter)", "type": "shelter", "junction": "J9", "x": 510, "y": 90, "zone": "Z4", "elev_m": 21.0, "criticality": 3, "flood_fail_depth_m": 0.3, "wind_fail_gust_ms": 38, "wind_exposure": 1.2, "ground_susceptibility": 0.0, "powered_by": null},
+    {"id": "A7", "name": "Estuary Water Works", "type": "water_works", "junction": "J6", "x": 790, "y": 500, "zone": "Z2", "elev_m": 2.4, "criticality": 5, "flood_fail_depth_m": 0.4, "wind_fail_gust_ms": 45, "wind_exposure": 1.1, "ground_susceptibility": 0.0, "powered_by": "A3"},
+    {"id": "A8", "name": "Ridge Telecom Mast", "type": "telecom", "junction": "J11", "x": 880, "y": 150, "zone": "Z4", "elev_m": 24.0, "criticality": 4, "flood_fail_depth_m": 0.5, "wind_fail_gust_ms": 34, "wind_exposure": 1.3, "ground_susceptibility": 0.0, "powered_by": null},
+    {"id": "A9", "name": "Municipal Works Depot", "type": "depot", "junction": "J10", "x": 215, "y": 70, "zone": "Z4", "elev_m": 19.0, "criticality": 2, "flood_fail_depth_m": 0.5, "wind_fail_gust_ms": 45, "wind_exposure": 1.0, "ground_susceptibility": 0.0, "powered_by": null},
+    {"id": "A10", "name": "Lowtown Residences", "type": "residential", "junction": "J1", "x": 90, "y": 560, "zone": "Z1", "elev_m": 1.55, "criticality": 3, "flood_fail_depth_m": 0.45, "wind_fail_gust_ms": 40, "wind_exposure": 1.05, "ground_susceptibility": 0.0, "powered_by": null}
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "slug": "coastal-storm",
+  "title": "Coastal storm",
+  "summary": "Heavy rainfall coincides with a high tide and storm surge. The Harborside warehouse and the Quay pump station are threatened; teams must choose protection priorities within budget.",
+  "seed": 1101,
+  "provenance": "Synthetic design event authored for the POC. Not derived from observations.",
+  "assumptions": [
+    "Rainfall, tide and surge are smooth synthetic curves.",
+    "Overtopping uses a lumped weir coefficient (0.05 m^0.5/s).",
+    "Soil starts moderately wet; no ground restrictions are expected."
+  ],
+  "known_constraints": [
+    "Two barrier sets and one temporary pump are available.",
+    "Budget does not cover protecting every exposed asset."
+  ],
+  "expected_behavior": "Without action the warehouse and pump station flood near the surge peak. A constrained plan protects the pump station first because its failure raises water levels across Harbor Flats.",
+  "params": {
+    "duration_h": 18,
+    "rainfall": {
+      "base_mm_h": 1.0,
+      "peak_mm_h": 36.0,
+      "peak_hour": 7.0,
+      "spread_h": 2.5
+    },
+    "coastal": {
+      "mean_level_m": 1.1,
+      "tide_amplitude_m": 0.6,
+      "tide_phase_h": 8.0,
+      "surge_peak_m": 1.6,
+      "surge_peak_hour": 8.0,
+      "surge_spread_h": 2.5
+    },
+    "wind": {
+      "base_ms": 6.0,
+      "peak_ms": 12.0,
+      "peak_hour": 8.0,
+      "spread_h": 3.0,
+      "gust_factor": 1.4
+    },
+    "soil_saturation": {
+      "Z3": 0.45,
+      "Z4": 0.4
+    },
+    "resources": {
+      "crews": 3,
+      "pumps": 1,
+      "barriers": 2,
+      "generators": 1,
+      "comms_units": 0,
+      "budget": 20000,
+      "mobilization_h": 1
+    },
+    "must_keep_operational": [],
+    "affected_assets": [
+      "A1",
+      "A2",
+      "A10"
+    ],
+    "source_labels": {
+      "rainfall": "synthetic design storm",
+      "coastal": "synthetic tide + surge curve",
+      "wind": "synthetic",
+      "resources": "fictional municipal inventory"
+    },
+    "notes": "Harbor operator reports the quay outfall flap valves were serviced last month."
+  }
+}

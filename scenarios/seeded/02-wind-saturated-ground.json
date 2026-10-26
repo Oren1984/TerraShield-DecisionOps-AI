@@ -1,0 +1,69 @@
+{
+  "slug": "wind-saturated-ground",
+  "title": "Wind and saturated ground",
+  "summary": "Days of rain have saturated Hillcrest slopes. A ground-risk restriction removes the West Descent road while strong wind makes elevated mast maintenance infeasible; the coordinator must find a valid alternative.",
+  "seed": 2202,
+  "provenance": "Synthetic design event authored for the POC. Not derived from observations.",
+  "assumptions": [
+    "Slope susceptibility is a simplified index (susceptibility x saturation squared), not a geotechnical model.",
+    "A road closed for ground risk stays closed for the rest of the event.",
+    "Elevated work is limited to 12 m/s sustained site wind."
+  ],
+  "known_constraints": [
+    "Mast securing cannot start before winds exceed its working limit.",
+    "One mobile communications unit is available at the depot."
+  ],
+  "expected_behavior": "West Descent closes for ground risk early. The telecom mast fails in the wind peak without action. A valid plan substitutes the mobile communications unit and reaches Harbor Flats via the hill roads.",
+  "params": {
+    "duration_h": 16,
+    "rainfall": {
+      "base_mm_h": 3.0,
+      "peak_mm_h": 16.0,
+      "peak_hour": 5.0,
+      "spread_h": 3.0
+    },
+    "coastal": {
+      "mean_level_m": 1.0,
+      "tide_amplitude_m": 0.5,
+      "tide_phase_h": 3.0,
+      "surge_peak_m": 0.5,
+      "surge_peak_hour": 6.0,
+      "surge_spread_h": 3.0
+    },
+    "wind": {
+      "base_ms": 7.0,
+      "peak_ms": 14.0,
+      "peak_hour": 7.0,
+      "spread_h": 2.5,
+      "gust_factor": 1.4
+    },
+    "soil_saturation": {
+      "Z3": 0.74,
+      "Z4": 0.62
+    },
+    "resources": {
+      "crews": 3,
+      "pumps": 1,
+      "barriers": 1,
+      "generators": 1,
+      "comms_units": 1,
+      "budget": 30000,
+      "mobilization_h": 1
+    },
+    "must_keep_operational": [
+      "A8"
+    ],
+    "affected_assets": [
+      "A8",
+      "A10",
+      "A5"
+    ],
+    "source_labels": {
+      "rainfall": "synthetic prolonged rain",
+      "wind": "synthetic windstorm curve",
+      "soil_saturation": "assumed antecedent wetness",
+      "resources": "fictional municipal inventory"
+    },
+    "notes": "Ground team reported fresh cracking on the West Descent embankment."
+  }
+}

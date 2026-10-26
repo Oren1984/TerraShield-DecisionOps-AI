@@ -1,0 +1,67 @@
+{
+  "slug": "cascading-failure",
+  "title": "Cascading infrastructure failure",
+  "summary": "Flooding at the Marsh Lane substation cuts power to both pump stations and the water works. Lost pumping raises simulated water levels in Harbor Flats; intervention order matters.",
+  "seed": 3303,
+  "provenance": "Synthetic design event authored for the POC. Not derived from observations.",
+  "assumptions": [
+    "Pump stations and the water works depend on the Marsh Lane substation (single-level dependency).",
+    "A backup generator keeps one dependent asset powered.",
+    "Pump and power state act with a one-hour lag."
+  ],
+  "known_constraints": [
+    "One barrier set and one generator are available.",
+    "Two crews are available."
+  ],
+  "expected_behavior": "Without action the substation floods and the cascade removes pumping in Harbor Flats and Riverside. Protecting the substation before its flood hour prevents the cascade; late intervention only partly helps.",
+  "params": {
+    "duration_h": 18,
+    "rainfall": {
+      "base_mm_h": 2.0,
+      "peak_mm_h": 38.0,
+      "peak_hour": 7.0,
+      "spread_h": 3.0
+    },
+    "coastal": {
+      "mean_level_m": 1.1,
+      "tide_amplitude_m": 0.6,
+      "tide_phase_h": 8.0,
+      "surge_peak_m": 1.2,
+      "surge_peak_hour": 8.0,
+      "surge_spread_h": 3.0
+    },
+    "wind": {
+      "base_ms": 5.0,
+      "peak_ms": 10.0,
+      "peak_hour": 9.0,
+      "spread_h": 3.0,
+      "gust_factor": 1.4
+    },
+    "soil_saturation": {
+      "Z3": 0.5,
+      "Z4": 0.45
+    },
+    "resources": {
+      "crews": 2,
+      "pumps": 1,
+      "barriers": 1,
+      "generators": 1,
+      "comms_units": 0,
+      "budget": 35000,
+      "mobilization_h": 1
+    },
+    "must_keep_operational": [],
+    "affected_assets": [
+      "A3",
+      "A2",
+      "A4",
+      "A7"
+    ],
+    "source_labels": {
+      "rainfall": "synthetic design storm",
+      "coastal": "synthetic tide + surge curve",
+      "resources": "fictional municipal inventory"
+    },
+    "notes": "Utility notes the substation flood door seal is due for replacement."
+  }
+}
