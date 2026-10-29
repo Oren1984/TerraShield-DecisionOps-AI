@@ -127,5 +127,6 @@ docker compose exec api python -m app.cli evaluate-retrieval --model local
 | "Port … is already in use" | Set `TS_WEB_PORT` in `.env` |
 | Local mode button disabled | Model readiness panel: Ollama reachable, both models present, chunks embedded |
 | Local run fails with `model_timeout` | CPU inference is slow; raise `TS_AGENT_TIMEOUT_S` or use a GPU |
-| Corporate TLS interception on the host | Host-side `uv`/`pip` may need system certificates (`uv sync --system-certs`); container builds were unaffected on the test machine |
+| Corporate TLS interception on the host | Host-side `uv`/`pip` may need system certificates (`uv sync --system-certs`) |
+| Image build fails with `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, a certificate error or "stale/unavailable repositories" | An antivirus or proxy is intercepting HTTPS. Export its root CA as PEM and pass it to the build: `$env:TS_BUILD_CA = Get-Content <ca.pem> -Raw` (PowerShell) or `export TS_BUILD_CA="$(cat <ca.pem>)"` (Bash), then build. It is used only while downloading packages and is not stored in the images |
 | Sign-in fails repeatedly | Five failures lock the account for five minutes |

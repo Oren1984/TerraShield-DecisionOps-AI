@@ -4,7 +4,12 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PROJECT_ENVIRONMENT=/opt/venv UV_PYTHON_DOWNLOADS=never
 WORKDIR /src
 COPY backend/pyproject.toml backend/uv.lock ./
-RUN uv sync --frozen --no-dev --no-install-project
+# Optional build_ca secret: extra root CA for hosts that intercept HTTPS (see compose.yaml).
+RUN --mount=type=secret,id=build_ca \
+    if [ -s /run/secrets/build_ca ]; then \
+      cat /etc/ssl/certs/ca-certificates.crt /run/secrets/build_ca > /tmp/ca.pem; export SSL_CERT_FILE=/tmp/ca.pem; \
+    fi; \
+    uv sync --frozen --no-dev --no-install-project
 
 FROM python:3.12-slim
 RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin app

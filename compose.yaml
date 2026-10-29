@@ -32,6 +32,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      secrets: [build_ca]
     image: terrashield-backend:local
     command: ["sh", "-c", "alembic upgrade head && python -m app.cli seed"]
     environment: *backend-env
@@ -73,6 +74,7 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      secrets: [build_ca]
     image: terrashield-web:local
     ports:
       - "${TS_BIND_ADDRESS:-127.0.0.1}:${TS_WEB_PORT:-8088}:8080"
@@ -91,6 +93,12 @@ services:
       - ollama-models:/root/.ollama
     networks: [edge]
     restart: unless-stopped
+
+# Optional extra root CA (PEM text) trusted only while downloading packages during image builds,
+# for hosts whose antivirus or proxy intercepts HTTPS. Unset means none. Never stored in an image.
+secrets:
+  build_ca:
+    environment: TS_BUILD_CA
 
 volumes:
   db-data:
