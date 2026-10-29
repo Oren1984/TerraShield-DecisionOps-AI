@@ -63,6 +63,16 @@ docker compose up --build -d
 
 Then open **<http://127.0.0.1:8088>**, create the owner account on first visit, or choose **Explore the demo**.
 
+### Demo account
+
+A read-only demo account is seeded with the demo data. It sees only the demo workspace and cannot change anything or start runs, and its access is checked by the server.
+
+| Username | Password |
+| --- | --- |
+| `demo` | `HarborVale-ReadOnly` |
+
+These credentials are public. Do not reuse them anywhere else.
+
 ## Scope and results
 
 Implemented: four seeded scenarios, Mock and Local modes, server-side owner/operator/demo roles, versioned approval, simulation of the approved plan, completion report, backup/restore and CI. Not implemented: public hosting, real data, historical replay or learned world models. Measured results, including where the multi-agent team did **not** beat a simpler variant, are in the validation document.
@@ -73,5 +83,3 @@ Implemented: four seeded scenarios, Mock and Local modes, server-side owner/oper
 - [Architecture](docs/ARCHITECTURE.md): components, contracts, simulation assumptions, planner, security
 - [Demo and operations](docs/DEMO_AND_OPERATIONS.md): installation, modes, seeded journeys, backup/restore, troubleshooting
 - [Governance and validation](docs/GOVERNANCE_AND_VALIDATION.md): human oversight, permissions, provenance, measured results, limitations
-
-No licence has been chosen yet.

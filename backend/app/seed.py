@@ -23,16 +23,30 @@ from app.agents.retrieval import (
     load_corpus,
 )
 from app.agents.workflow import Workflow
+from app.auth.passwords import hash_password
 from app.config import settings
 from app.jobs.runner import simulate_approved
 from app.jobs.statemachine import transition
-from app.models import Approval, CandidatePlanRow, DistrictAsset, JobLease, RoadEdgeRow, Run, Scenario, Workspace
+from app.models import (
+    Approval,
+    CandidatePlanRow,
+    DistrictAsset,
+    JobLease,
+    RoadEdgeRow,
+    Run,
+    Scenario,
+    User,
+    Workspace,
+)
 from app.services import seed_workspace_scenarios
 from app.simulation.district import load_district
 
 logger = logging.getLogger("terrashield.seed")
 
 DEMO_WORKSPACE = "Demo: Harbor Vale (read-only)"
+# Published read-only account; it grants nothing beyond the anonymous demo session.
+DEMO_USERNAME = "demo"
+DEMO_PASSWORD = "HarborVale-ReadOnly"  # noqa: S105 - intentionally public, documented in README
 FIXTURE_VECTORS = "fixture_vectors.json"
 
 
@@ -103,6 +117,9 @@ def seed_demo(db: Session) -> None:
         db.add(ws)
         db.flush()
     seed_workspace_scenarios(db, ws.id, None)
+    # Created once; an owner may later reset or deactivate it, so it is never overwritten.
+    if db.scalar(select(User).where(User.username == DEMO_USERNAME)) is None:
+        db.add(User(username=DEMO_USERNAME, password_hash=hash_password(DEMO_PASSWORD), role="demo"))
     db.commit()
     from app.services import create_run
 

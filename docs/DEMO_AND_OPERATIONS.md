@@ -39,7 +39,7 @@ The default port is 8088; if it is taken, the bootstrap script stops and asks yo
 1. Open the application. On first visit choose **Set up the owner account** and create the owner (12+ characters, not containing the username). There is no default password. Alternatively: `docker compose exec api python -m app.cli create-owner --username <name>` (reads `TS_OWNER_PASSWORD` or prompts).
 2. The owner's workspace, *Harbor Vale Operations*, starts with the four seeded scenarios.
 3. **Users** (owner only) adds operators and assigns workspaces. **Operations** shows queue, run counts, measured latency, validation rejections and retries.
-4. **Explore the demo (read-only)** opens the demo workspace with seeded runs, without an account.
+4. **Explore the demo (read-only)** opens the demo workspace with seeded runs, without an account. The same access is available by signing in as `demo` / `HarborVale-ReadOnly`, a read-only account the migrate job seeds once with the demo data. The owner can reset its password or deactivate it on the Users page.
 
 ## Seeded journeys
 

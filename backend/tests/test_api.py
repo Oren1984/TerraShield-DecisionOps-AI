@@ -188,6 +188,24 @@ def test_demo_session_is_read_only_and_scoped(app_ready, owner, workspace, db):
     assert c.get("/api/models/readiness").json()["local"]["ready"] is None
 
 
+def test_demo_account_login_is_read_only(app_ready, workspace, db):
+    from app.seed import DEMO_PASSWORD, DEMO_USERNAME, seed_demo
+
+    seed_demo(db)
+    seed_demo(db)  # idempotent
+    db.commit()
+    c = TestClient(app_ready)
+    me = c.post("/api/auth/login", json={"username": DEMO_USERNAME, "password": DEMO_PASSWORD}, headers=H).json()
+    assert me["role"] == "demo" and me["capabilities"] == []
+    wss = c.get("/api/workspaces").json()
+    assert len(wss) == 1 and wss[0]["is_demo"]
+    sc = c.get(f"/api/workspaces/{wss[0]['id']}/scenarios").json()[0]
+    assert c.post(f"/api/scenarios/{sc['id']}/runs", json={"mode": "mock"}, headers=H).status_code == 403
+    assert c.post("/api/workspaces", json={"name": "demo-made"}, headers=H).status_code == 403
+    assert c.get("/api/users").status_code == 403
+    assert c.get(f"/api/workspaces/{workspace['id']}/runs").status_code == 404
+
+
 # ----------------------------------------------------------------------------- full journey and approval binding
 
 
